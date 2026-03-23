@@ -1,51 +1,94 @@
 import mongoose, { Types } from "mongoose";
 import { Schema } from "mongoose";
-import { genderEnum, providerEnum } from "../../common/enum/enum.js";
+import {
+  genderEnum,
+  providerEnum,
+  roleEnum,
+} from "../../common/enum/enum.js";
 
-const userSchema=new Schema({
-    fName:{
-        type: String,
-        required: true,
-        minLength:2,
-        maxLength:20
 
+const userSchema = new Schema({
+  fName: {
+    type: String,
+    required: true,
+    minLength: 2,
+    maxLength: 20,
+  },
+  lName: {
+    type: String,
+    required: true,
+    minLength: 2,
+    maxLength: 20,
+  },
+  email: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  phone: String,
+  DOB: Date,
+  gender: {
+    type: String,
+    enum: Object.values(genderEnum),
+    default: genderEnum.male,
+  },
+  provider: {
+    type: String,
+    enum: Object.values(providerEnum),
+    default: providerEnum.service,
+  },
+  role: {
+    type: String,
+    enum: Object.values(roleEnum),
+    default: roleEnum.user,
+  },
+  sharePorfileName:{
+    type: String,
+    unique: true,
+    required: true
+  },
+  image:{
+   type:String
     },
-    lName:{
-        type: String,
-        required: true,
-        minLength:2,
-        maxLength:20
+  viewCount: {
+    type: Number,
+    default: 0
+  },
+  loginAttempts: {
+    type: Number,
+    default: 0
+  },
+  isverified: {
+   type: Boolean,
+   default: false
 
-    },
-    email:{
-        type: String,
-        required: true
-    },
-    password:{
-        type: String,
-        required: true
-    },
-    phone: String,
-    DOB: Date,
-    gender:{
-        type:String,
-        enum:Object.values(genderEnum),
-        default: genderEnum.male
-    },
-    provider:{
-        type:String,
-        enum:Object.values(providerEnum),
-        default: providerEnum.service
-    }
+  },
+  twoStepEnabled: { 
+    type: Boolean, default: false 
+  },
 
-})
+  deleteAt: {
+    type: Date,
+    expires: 0,
+  },
 
-userSchema.virtual("userName").set(function(value){
-    let[fName, lName]=value.split(" ")
-    this.fName= fName
-    this.lName=lName
-}).get(function(){
-    return` ${this.fName} ${this.lName}`
-})
+  banUntil: Date
 
-export const userModel= mongoose.model("users", userSchema)
+});
+
+userSchema
+  .virtual("userName")
+  .set(function (value) {
+    let [fName, lName] = value.split(" ");
+    this.fName = fName;
+    this.lName = lName;
+  })
+  .get(function () {
+    return ` ${this.fName} ${this.lName}`;
+  });
+
+export const userModel = mongoose.model("users", userSchema);
